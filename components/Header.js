@@ -1,13 +1,10 @@
 import React from "react";
-// import {useStateValue} from "../state/state";
 
 const Header = () => {
   return (
     <header>
       <div className="header-wrap">
-        <div className="app-banner">
-          <h1>Minesweeper</h1>
-        </div>
+        <h1>Minesweeper</h1>
         <nav>
           <ul>
             <li>
@@ -31,7 +28,10 @@ const Header = () => {
           background: #333;
         }
         h1 {
-          margin-top: 0;
+          margin: 0 20px 0 0;
+        }
+        .header-wrap {
+          display: flex;
         }
       `}</style>
     </header>

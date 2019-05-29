@@ -1,36 +1,74 @@
 import React from "react";
 import { useStateValue } from "../state/state";
 
+const getCoordinates = (e) => {
+  let coordinatesValues = e.target.attributes[1].value.split(",");
+  let X = coordinatesValues[0].split(":")[1];
+  let Y = coordinatesValues[1].split(":")[1];
+  return { X: Number(X), Y: Number(Y) };
+}
+
 const Board = () => {
-  const [{ mapInitOptions }, dispatch] = useStateValue();
-  const createGrid = opts => {
+  const [{ data }, dispatch] = useStateValue();
+
+  const renderGrid = () => {
     let grid = [];
 
     // Outer loop to create parent
-    for (let i = 0; i < opts.XY; i++) {
+    for (let y = 0; y <= data.gridState.length - 1; y++) {
       let children = [];
+
       //Inner loop to create children
-      for (let j = 0; j < opts.XY; j++) {
+      for (let x = 0; x <= data.gridState[y].length - 1; x++) {
+        if (data.gridState[x][y].proximityNum) { console.log(data.gridState[x][y]); }
         children.push(
-          <li key={"x:" + j + "," + "y:" + i}>
+          <li key={"x:" + x + "," + "y:" + y}>
             <button
-              className={["square"]}
-              coordinates={"x:" + j + "," + "y:" + i}
+              className={
+                "square" +
+                (data.gridState[x][y].flagged === true
+                  ? " flagged"
+                  : "") +
+                (data.gridState[x][y].cleared &&
+                !data.gridState[x][y].mine
+                  ? " cleared"
+                  : "") +
+                (data.gridState[x][y].cleared &&
+                data.gridState[x][y].mine
+                  ? " bombed trigger"
+                  : "") +
+                (data.gridState[x][y].proximityNum > 0
+                  ? (" space-" + proximityNum)
+                  : "")
+              }
+              coordinates={"x:" + x + "," + "y:" + y}
+              mine={String(!!data.gridState[x][y].mine)}
               onClick={e => {
-                console.log(e.target.attributes[1].value);
+                dispatch({
+                  type: "SET_GRIDSTATE",
+                  payload: getCoordinates(e)
+                });
+              }}
+              onContextMenu={e => {
+                e.preventDefault();
+                dispatch({
+                  type: "SET_FLAG",
+                  payload: getCoordinates(e)
+                });
               }}
             />
           </li>
         );
       }
       //Create the parent and add the children
-      grid.push(<ul key={"y:" + i}>{children}</ul>);
+      grid.push(<ul key={"y:" + y}>{children}</ul>);
     }
     return grid;
   };
+
   return (
     <div id="board">
-      {createGrid(mapInitOptions)}
+      {data.gridState && renderGrid(data.gridState)}
       <style jsx global>{`
         #board {
           font-family: "Doppio One", sans-serif;
@@ -77,6 +115,9 @@ const Board = () => {
           cursor: pointer;
           border: none;
         }
+        #board button[mine="true"] {
+          background: red;
+        }
         #board button:hover {
           filter: saturate(300%);
         }
@@ -99,6 +140,10 @@ const Board = () => {
 
           border-right: 3px solid #707070;
           border-bottom: 3px solid #707070;
+        }
+
+        #board button:focus {
+          outline: none;
         }
 
         #board button.square:active,
@@ -133,23 +178,23 @@ const Board = () => {
           background-size: 16px;
         }
 
-        #board button.square.bomb-1 {
+        #board button.square.space-1 {
           color: #0000ff;
         }
 
-        #board button.square.bomb-2 {
+        #board button.square.space-2 {
           color: #187b00;
         }
 
-        #board button.square.bomb-3 {
+        #board button.square.space-3 {
           color: #fa1000;
         }
 
-        #board button.square.bomb-4 {
+        #board button.square.space-4 {
           color: #000081;
         }
 
-        #board button.square.bomb-5 {
+        #board button.square.space-5 {
           color: #780200;
         }
       `}</style>

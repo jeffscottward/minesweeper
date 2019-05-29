@@ -1,14 +1,30 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useStateValue } from "../state/state";
+import countDownClock from "../utils/countDownClock";
 
 const Scoreboard = () => {
-  const [{ data }] = useStateValue();
+  const [{ data }, dispatch] = useStateValue();
+  
+  useEffect(() => {
+    countDownClock(dispatch);
+  }, []);
+  
+  if (data.scoreTimeCount === "00:00") {
+    // countDownClock(dispatch, 'killcode');
+    // countDownClock(dispatch);
+  }
   return (
     <div id="scoreboard">
       <div id="score-bomb-count" className="panel">
-        {data.scoreBombCount}
+        {data.scorePointCount}
       </div>
-      <button id="score-restart-button" />
+      <button
+        id="score-restart-button"
+        onClick={e => {
+          dispatch({ type: "RESET_GAME" });
+        }}
+      />
+      
       <div id="score-time-count" className="panel">
         {data.scoreTimeCount}
       </div>
@@ -39,7 +55,7 @@ const Scoreboard = () => {
 
         #scoreboard .panel {
           display: inline-block;
-          padding: 1px;
+          padding: 2px 5px 0;
 
           background-color: black;
           color: #df0d14;
@@ -322,6 +338,9 @@ const Scoreboard = () => {
           border-right: 2px solid #f2f2f2;
           border-bottom: 2px solid #f2f2f2;
           background-position: 5px 5px;
+        }
+        #score-restart-button:focus {
+          outline: none;
         }
       `}</style>
     </div>
