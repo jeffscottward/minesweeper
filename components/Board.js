@@ -20,7 +20,6 @@ const Board = () => {
 
       //Inner loop to create children
       for (let x = 0; x <= data.gridState[y].length - 1; x++) {
-        if (data.gridState[x][y].proximityNum) { console.log(data.gridState[x][y]); }
         children.push(
           <li key={"x:" + x + "," + "y:" + y}>
             <button
@@ -37,8 +36,9 @@ const Board = () => {
                 data.gridState[x][y].mine
                   ? " bombed trigger"
                   : "") +
-                (data.gridState[x][y].proximityNum > 0
-                  ? (" space-" + proximityNum)
+                (data.gridState[x][y].proximityNum > 0 &&
+                !data.gridState[x][y].mine
+                  ? " space-" + data.gridState[x][y].proximityNum
                   : "")
               }
               coordinates={"x:" + x + "," + "y:" + y}
@@ -56,7 +56,10 @@ const Board = () => {
                   payload: getCoordinates(e)
                 });
               }}
-            />
+            >
+              {data.gridState[x][y].proximityNum > 0 &&
+                data.gridState[x][y].proximityNum}
+            </button>
           </li>
         );
       }
