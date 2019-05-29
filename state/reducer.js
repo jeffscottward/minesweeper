@@ -5,8 +5,8 @@ function boxSniffer(state, coord) {
   let gridState = state.data.gridState;
   let mineCount = 0;
 
-  function boundaryChecker(desiredCoord) {
-    if (desiredCoord >= 0 && desiredCoord < globalValues.XY) {
+  function boundaryChecker(desiredCoordinate) {
+    if (desiredCoordinate >= 0 && desiredCoordinate < globalValues.XY) {
       return true;
     }
   }
@@ -18,17 +18,17 @@ function boxSniffer(state, coord) {
   // NOTE: Can't use negative iterators -> make adjustment with - 1
   for (let indexX = 0; indexX <= 2; indexX++) {
     for (let indexY = 0; indexY <= 2; indexY++) {
+      let XVal = coord.X + indexX - 1;
+      let YVal = coord.Y + indexY - 1;
       if (
-        boundaryChecker(coord.X + indexX - 1) &&
-        boundaryChecker(coord.Y + indexY - 1)
+        boundaryChecker(XVal) &&
+        boundaryChecker(YVal) &&
+        gridState[XVal][YVal].mine === true
       ) {
-        gridState[coord.X + indexX - 1][coord.Y + indexY - 1].mine === true
-          ? mineCount++
-          : null;
+        mineCount++
       }
     }
   }
-
   return mineCount;
 }
 
